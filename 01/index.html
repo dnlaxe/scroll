@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>03-Loading-Spinner</title>
+  <title>01-Scroll Basics + Back to Top Button</title>
   <style>
     :root {
       --fg: rgb(56, 56, 56);
@@ -52,6 +52,28 @@
       background: lightgreen;
     }
 
+    #backToTop {
+      position: fixed;
+      bottom: -150px;
+      right: 10px;
+      font-size: 110px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      pointer-events: none;
+      transition: bottom 0.5s ease;
+      z-index: 1000;
+      color: #fff;
+      background-color: transparent;
+      line-height: 1;
+      text-align: center;
+    }
+
+    #backToTop.show {
+      bottom: 20px;
+      pointer-events: auto;
+    }
+
 
   </style>
 </head>
@@ -62,7 +84,28 @@
   <section>About</section>
   <section>Contact</section>
 
+  <button id="backToTop">↑</button>
+
   <script>
+
+const backToTopBtn = document.getElementById('backToTop');
+
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 200) {
+    backToTopBtn.classList.add('show');
+  } else {
+    backToTopBtn.classList.remove('show');
+  }
+});
+
+backToTopBtn.addEventListener('click', () => {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+});
+
+
   </script>
 
 </body>
