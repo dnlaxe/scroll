@@ -1,4 +1,4 @@
-# Scroll & Animation: 02-Intersection Observer + Parallax
+# Scroll & Animation: 02-Intersection Observer
 
 # Features
 
@@ -21,4 +21,3 @@
 - **CSS Variables** (`--fg`, `--bg`, `--neon`) for scalable, easily adjustable themes.
 - **Relative and Absolute Positioning** to layer text correctly over images.
 - **Controlled Transition Timing** to sequence image fade-in, text drop, and underline drawing.
-- **Parallax-Like Effect** by independently animating the heading position to add depth on scroll.

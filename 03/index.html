@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>03-Parallax Hero, Sticky Nav & Scroll Reveal</title>
+  <style>
+    :root {
+      --fg: rgb(56, 56, 56);
+      --bg: #ffffff;
+      --neon: rgb(0, 195, 255);
+    }
+
+    * {
+      font-family: monospace;
+      font-size: 22px;
+      color: var(--fg);
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, html {
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 200vh;
+      overflow-x: hidden;
+    }
+
+    .parallax-container {
+      position: relative;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .layer {
+      position: absolute;
+      width: 100%;
+      height: 100vh;
+      top: 0;
+      left: 0;
+      will-change: transform;
+    }
+
+    .background {
+      background: url('photo1.avif') center / cover no-repeat;
+      z-index: 1;
+    }
+
+    .midground {
+      background: url('photo1.avif') center / contain no-repeat;
+      z-index: 2;
+      background-size: 90% 90%;
+      filter: brightness(90%);
+    }
+
+    .foreground {
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .foreground h1 {
+      font-size: 5rem;
+      color: var(--bg);
+      font-family: monospace;
+      text-align: center;
+    }
+
+    .content {
+      gap: 22px;
+      padding: 88px;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      height: 100vh;
+      text-align: center;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      position: fixed;
+      z-index: 4;
+      width: 100%;
+      height: 5%;
+      padding: 0 5%;
+      align-items: center;
+      transition: box-shadow 0.3s ease;
+    }
+
+    nav.scrolled {
+      border-bottom: solid 1px var(--fg);
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    ul {
+      list-style: none;
+      display: flex;
+      gap: 22px;
+    }
+
+    p {
+      line-height: 1.5;
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: row;
+      cursor: pointer;
+      z-index: 20;
+      gap: 6px;
+    }
+
+    .hamburger span {
+      height: 6px;
+      width: 6px;
+      border-radius: 50%;
+      margin: 4px 0;
+      transition: transform 0.5s ease-in-out, background-color 0.5s ease-in-out;
+      transform-origin: center;
+      background-color: var(--fg);
+    }
+
+    .hamburger.active span:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+
+    .hamburger.active span:nth-child(2) {
+      transform: rotate(-45deg) translate(5px, -5px);
+    }
+
+    .hamburger.active span {
+      background-color: var(--bg);
+    }
+
+    .arrow {
+      width: 4rem;
+      height: 4rem;
+      border-right: 5px solid var(--bg);
+      border-bottom: 5px solid var(--bg);
+      color: var(--bg);
+      transform: rotate(45deg) translateX(-50%);
+      cursor: pointer;
+      position: absolute;
+      z-index: 5;
+      left: 50%;
+      bottom: 10%;
+    }
+
+
+    @media (max-width: 768px) {
+      .hamburger {
+        display: flex;
+      }
+
+      .desktop-nav {
+        display: none;
+      }
+
+      .foreground h1 {
+        font-size: 3rem;
+      }
+
+      .arrow {
+        width: 2rem;
+        height: 2rem;
+        border-right: 4px solid var(--bg);
+        border-bottom: 4px solid var(--bg);
+        }
+    }
+
+  </style>
+</head>
+  <body>
+
+    <nav>
+      <div>The Company</div>
+      <ul class="desktop-nav">
+        <li><a href="#">Home</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Services</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+      <div class="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </nav>
+
+    <div class="parallax-container">
+      <div class="layer background" data-speed="0.2"></div>
+      <div class="layer midground" data-speed="1"></div>
+      <div class="layer foreground" data-speed="0.45">
+        <h1>Parallax</h1>
+      </div>
+      <span class="arrow"></span>
+    </div>
+    <div class="content">
+      <h1>This where content can go.</h1>
+      <p>Nouns upon verbs after adjectives to form sentence beyond sentence to create paragraphs. Nouns upon verbs after adjectives to form sentence beyond sentence to create paragraphs.
+        Nouns upon verbs after adjectives to form sentence beyond sentence to create paragraphs. Nouns upon verbs after adjectives to form sentence beyond sentence to create paragraphs.
+      </p>
+    </div>
+  </body>
+  
+  <script>
+    window.addEventListener('scroll', () => {
+  const layers = document.querySelectorAll('.layer');
+  const scrollY = window.scrollY;
+
+  layers.forEach(layer => {
+    const speed = parseFloat(layer.dataset.speed);
+    const yPos = scrollY * speed;
+    layer.style.transform = `translateY(${yPos}px)`;
+  });
+});
+
+const nav = document.querySelector("nav");
+
+const triggerHeight = window.innerHeight * 0.8;
+
+window.addEventListener("scroll", () => {
+  if (window.scrollY > triggerHeight) {
+    nav.classList.add("scrolled");
+  } else {
+    nav.classList.remove("scrolled");
+  }
+});
+
+const content = document.querySelector('.content');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, {
+  threshold: 0.1
+});
+
+observer.observe(content);
+
+const arrow = document.querySelector('.arrow');
+const contentSection = document.querySelector('.content');
+
+arrow.addEventListener('click', () => {
+  contentSection.scrollIntoView({ behavior: 'smooth' });
+});
+  </script>
+
+</body>
+</html>
