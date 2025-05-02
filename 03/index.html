@@ -21,15 +21,9 @@
       box-sizing: border-box;
     }
 
-    body, html {
-      margin: 0;
-      padding: 0;
-    }
-
+    /* 💡 CHANGED: use min-height instead of height */
     html, body {
-      margin: 0;
-      padding: 0;
-      height: 200vh;
+      min-height: 100%;
       overflow-x: hidden;
     }
 
@@ -37,16 +31,17 @@
       scroll-behavior: smooth;
     }
 
+    /* 💡 CHANGED: dynamic height using --vh */
     .parallax-container {
       position: relative;
-      height: calc(var(--vh) * 100);
+      height: calc(var(--vh, 1vh) * 100);
       overflow: hidden;
     }
 
     .layer {
       position: absolute;
       width: 100%;
-      height: calc(var(--vh) * 100);
+      height: calc(var(--vh, 1vh) * 100); /* 💡 same here */
       top: 0;
       left: 0;
       will-change: transform;
@@ -74,7 +69,6 @@
     .foreground h1 {
       font-size: 5rem;
       color: var(--bg);
-      font-family: monospace;
       text-align: center;
     }
 
@@ -84,20 +78,22 @@
       display: flex;
       align-items: center;
       flex-direction: column;
-      height: calc(var(--vh) * 100);
+      height: calc(var(--vh, 1vh) * 100); /* 💡 changed from 100vh */
       text-align: center;
     }
 
+    /* 💡 CHANGED: fixed nav height instead of percentage */
     nav {
       display: flex;
       justify-content: space-between;
       position: fixed;
       z-index: 4;
       width: 100%;
-      height: 5%;
+      height: 60px;
       padding: 0 5%;
       align-items: center;
       transition: box-shadow 0.3s ease;
+      background-color: var(--bg);
     }
 
     nav.scrolled {
@@ -162,7 +158,6 @@
       bottom: 10%;
     }
 
-
     @media (max-width: 768px) {
       .hamburger {
         display: flex;
@@ -181,101 +176,99 @@
         height: 2rem;
         border-right: 4px solid var(--bg);
         border-bottom: 4px solid var(--bg);
-        }
+      }
     }
 
   </style>
 </head>
-  <body>
+<body>
 
-    <nav>
-      <div>The Company</div>
-      <ul class="desktop-nav">
-        <li><a href="#">Home</a></li>
-        <li><a href="#">About</a></li>
-        <li><a href="#">Services</a></li>
-        <li><a href="#">Contact</a></li>
-      </ul>
-      <div class="hamburger">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-    </nav>
+  <nav>
+    <div>The Company</div>
+    <ul class="desktop-nav">
+      <li><a href="#">Home</a></li>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Services</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+    <div class="hamburger">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </nav>
 
-    <div class="parallax-container">
-      <div class="layer background" data-speed="0.2"></div>
-      <div class="layer midground" data-speed="1"></div>
-      <div class="layer foreground" data-speed="0.45">
-        <h1>Parallax</h1>
-      </div>
-      <span class="arrow"></span>
+  <div class="parallax-container">
+    <div class="layer background" data-speed="0.2"></div>
+    <div class="layer midground" data-speed="1"></div>
+    <div class="layer foreground" data-speed="0.45">
+      <h1>Parallax</h1>
     </div>
-    <div class="content">
-      <h1>This is where content can go.</h1>
-      <p>Nouns upon verbs after adjectives to form sentence beyond sentence to create paragraphs. Nouns upon verbs after adjectives to form sentence beyond sentence to create paragraphs.
-        Nouns upon verbs after adjectives to form sentence beyond sentence to create paragraphs. Nouns upon verbs after adjectives to form sentence beyond sentence to create paragraphs.
-      </p>
-    </div>
-  </body>
-  
+    <span class="arrow"></span>
+  </div>
+
+  <div class="content">
+    <h1>This is where content can go.</h1>
+    <p>
+      Nouns upon verbs after adjectives to form sentence beyond sentence to create paragraphs.
+      Nouns upon verbs after adjectives to form sentence beyond sentence to create paragraphs.
+    </p>
+  </div>
+
   <script>
+    // 💡 Smooth parallax effect
     window.addEventListener('scroll', () => {
-  const layers = document.querySelectorAll('.layer');
-  const scrollY = window.scrollY;
+      const layers = document.querySelectorAll('.layer');
+      const scrollY = window.scrollY;
 
-  layers.forEach(layer => {
-    const speed = parseFloat(layer.dataset.speed);
-    const yPos = scrollY * speed;
-    layer.style.transform = `translateY(${yPos}px)`;
-  });
-});
+      layers.forEach(layer => {
+        const speed = parseFloat(layer.dataset.speed);
+        const yPos = scrollY * speed;
+        layer.style.transform = `translateY(${yPos}px)`;
+      });
+    });
 
-const nav = document.querySelector("nav");
+    // 💡 Sticky nav
+    const nav = document.querySelector("nav");
+    const triggerHeight = window.innerHeight * 0.8;
 
-const triggerHeight = window.innerHeight * 0.8;
+    window.addEventListener("scroll", () => {
+      if (window.scrollY > triggerHeight) {
+        nav.classList.add("scrolled");
+      } else {
+        nav.classList.remove("scrolled");
+      }
+    });
 
-window.addEventListener("scroll", () => {
-  if (window.scrollY > triggerHeight) {
-    nav.classList.add("scrolled");
-  } else {
-    nav.classList.remove("scrolled");
-  }
-});
+    // 💡 Scroll reveal
+    const content = document.querySelector('.content');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
 
-const content = document.querySelector('.content');
+    observer.observe(content);
 
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('visible');
+    // 💡 Arrow scroll
+    const arrow = document.querySelector('.arrow');
+    arrow.addEventListener('click', () => {
+      content.scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // 💡 FINAL FIX: dynamic --vh variable using visualViewport
+    function setVH() {
+      const vh = (window.visualViewport?.height || window.innerHeight) * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
     }
-  });
-}, {
-  threshold: 0.1
-});
 
-observer.observe(content);
-
-const arrow = document.querySelector('.arrow');
-const contentSection = document.querySelector('.content');
-
-arrow.addEventListener('click', () => {
-  contentSection.scrollIntoView({ behavior: 'smooth' });
-});
-
-function setVH() {
-  const height = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-  document.documentElement.style.setProperty('--vh', `${height * 0.01}px`);
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  setVH();
-  window.addEventListener('resize', setVH);
-  window.addEventListener('orientationchange', setVH);
-});
-
-
+    document.addEventListener('DOMContentLoaded', () => {
+      setVH();
+      window.addEventListener('resize', setVH);
+      window.addEventListener('orientationchange', setVH);
+    });
   </script>
 
 </body>
