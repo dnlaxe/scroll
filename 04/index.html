@@ -43,7 +43,7 @@
 
     .section {
       scroll-snap-align: start;
-      height: 100vh;
+      height: calc(var(--vh, 1vh) * 100);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -59,31 +59,31 @@
     }
 
     .reveal {
-  opacity: 0;
-  transition: opacity 0.8s ease, transform 0.8s ease;
-    }
+      opacity: 0;
+      transition: opacity 0.8s ease, transform 0.8s ease;
+        }
 
-    [data-direction="down"] .reveal {
-      transform: translateY(40px);
-    }
-    [data-direction="left"] .reveal {
-      transform: translateX(-40px);
-    }
-    [data-direction="right"] .reveal {
-      transform: translateX(40px);
-    }
+        [data-direction="down"] .reveal {
+          transform: translateY(40px);
+        }
+        [data-direction="left"] .reveal {
+          transform: translateX(-40px);
+        }
+        [data-direction="right"] .reveal {
+          transform: translateX(40px);
+        }
 
-    .reveal.visible {
-      opacity: 1;
-      transform: translate(0, 0);
-    }
+        .reveal.visible {
+          opacity: 1;
+          transform: translate(0, 0);
+        }
 
-    button {
-      background-color: var(--neon);
-      color: var(--fg);
-      padding: 0.5rem 1rem;
-      cursor: pointer;
-    }
+        button {
+          background-color: var(--neon);
+          color: var(--fg);
+          padding: 0.5rem 1rem;
+          cursor: pointer;
+        }
 
   </style>
 </head>
@@ -131,6 +131,14 @@
     document.querySelectorAll('.content').forEach(section => {
       observer.observe(section);
     });
+
+    function setVh() {
+      let vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    }
+    window.addEventListener('resize', setVh);
+    setVh();
+
   </script>
 
 </body>
