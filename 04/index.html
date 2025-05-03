@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>04-Multi-Directional Staggered Reveals</title>
+
+  <style>
+    :root {
+      --fg: rgb(24, 24, 24);
+      --bg: #ffffff;
+      --neon: #9affcd;
+    }
+
+    * {
+      font-size: 1.5rem;
+      color: var(--fg);
+      background-color: var(--bg);
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: monospace;
+    }
+
+    @media (max-width: 600px) {
+      * {
+        font-size: 1.25rem; /* ~20px for smaller screens */
+      }
+    }
+
+    body, html {
+      height: 100%;
+      scroll-snap-type: y mandatory;
+      overflow-y: scroll;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      overscroll-behavior: none;
+      -webkit-overflow-scrolling: touch; /* Enables momentum scrolling */
+    }
+
+
+    .section {
+      scroll-snap-align: start;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .content {
+      max-width: 600px;
+      text-align: center;
+      display: flex;
+      gap: 44px;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .reveal {
+  opacity: 0;
+  transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    [data-direction="down"] .reveal {
+      transform: translateY(40px);
+    }
+    [data-direction="left"] .reveal {
+      transform: translateX(-40px);
+    }
+    [data-direction="right"] .reveal {
+      transform: translateX(40px);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+
+    button {
+      background-color: var(--neon);
+      color: var(--fg);
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+    }
+
+  </style>
+</head>
+<body>
+
+  <section class="section">
+    <div class="content" data-direction="down">
+      <h2 class="reveal">Section 1</h2>
+      <p class="reveal">Nouns mixed with verbs upon adjectives synchronising into sentences with meaning grouped in paragraphs.</p>
+      <button class="reveal">Learn More</button>
+    </div>
+  </section>
+  
+  <section class="section">
+    <div class="content" data-direction="left">
+      <h1 class="reveal">Section 2</h1>
+      <p class="reveal">Nouns mixed with verbs upon adjectives synchronising into sentences with meaning grouped in paragraphs.</p>
+      <button class="reveal">Learn More</button>
+    </div>
+  </section>
+  
+  <section class="section">
+    <div class="content" data-direction="right">
+      <h1 class="reveal">Section 3</h1>
+      <p class="reveal">Nouns mixed with verbs upon adjectives synchronising into sentences with meaning grouped in paragraphs.</p>
+      <button class="reveal">Learn More</button>
+    </div>
+  </section>
+  
+
+  <script>
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        const reveals = entry.target.querySelectorAll('.reveal');
+        if (entry.isIntersecting) {
+          reveals.forEach((el, i) => {
+            setTimeout(() => el.classList.add('visible'), i * 500);
+          });
+        } else {
+          reveals.forEach(el => el.classList.remove('visible'));
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.content').forEach(section => {
+      observer.observe(section);
+    });
+  </script>
+
+</body>
+</html>
