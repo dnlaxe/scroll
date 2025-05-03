@@ -127,7 +127,7 @@
           reveals.forEach(el => el.classList.remove('visible'));
         }
       });
-    }, { threshold: 0.2 });
+    }, { threshold: 1 });
 
     document.querySelectorAll('.content').forEach(section => {
       observer.observe(section);
