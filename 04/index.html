@@ -115,6 +115,7 @@
   
 
   <script>
+    // === Intersection Observer for reveal animations ===
     const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         const reveals = entry.target.querySelectorAll('.reveal');
@@ -132,14 +133,33 @@
       observer.observe(section);
     });
 
+    // === Robust viewport height (vh) fix ===
     function setVh() {
       const vh = (window.visualViewport?.height || window.innerHeight) * 0.01;
       document.documentElement.style.setProperty('--vh', `${vh}px`);
     }
 
+    // Set once after full page load to avoid early firing
+    window.addEventListener('load', () => {
+      // Wait for layout to stabilize
+      requestAnimationFrame(() => {
+        requestAnimationFrame(setVh);
+      });
+    });
+
+    // Update on viewport resize
     window.addEventListener('resize', setVh);
-    window.addEventListener('orientationchange', setVh); // for good measure
-    setVh();
+    window.addEventListener('orientationchange', setVh);
+
+    // Chrome-specific: listen for UI collapse/expand
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', setVh);
+    }
+
+    // Fallback for Chrome: update on scroll (address bar collapses)
+    window.addEventListener('scroll', () => {
+      requestAnimationFrame(setVh);
+    });
 
 
   </script>
