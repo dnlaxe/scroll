@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Microproject i</title>
+
+  <style>
+    :root {
+      --fg: rgb(24, 24, 24);
+      --bg: #ffffff;
+      --neon: #9affcd;
+      --gray: lightgray;
+    }
+
+    * {
+      font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+      color: var(--fg);
+      background-color: var(--bg);
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: monospace;
+    }
+
+    body {
+      height: 100%;
+    }
+
+    .panel {
+      height: calc(var(--vh, 1vh) * 100);
+      position: sticky;
+      top: 0;
+      padding: 44px;
+      display: flex;
+      gap: 22px;
+      flex-direction: column;
+    }
+
+    .section3 {
+      background-color: var(--fg);
+      width: 100%;
+    }
+
+    .section3 h1, .section3 p{
+      color: var(--neon);
+    }
+
+    .section4, .section2 {
+      background-color: var(--gray);
+    }
+
+    h1 {
+      background-color: inherit;;
+    }
+
+    p {
+      font-size: 0.75rem;
+      line-height: 1.5;
+      background-color: inherit;
+    }
+
+    .panel > * {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+
+    .panel.visible > * {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 11px;
+      background: var(--neon);
+      width: 0%;
+      z-index: 1000;
+      transition: width 0.1s ease-out;
+    }
+
+    .section3 {
+      background-color: var(--fg);
+    }
+
+    .squares {
+      display: flex;
+      background-color: inherit;
+      justify-content: space-around;
+      align-items: center;
+      flex: 1;
+    }
+
+    .square {
+      width: 40%;
+      aspect-ratio: 1/1;
+      background-color: var(--neon);
+      border-radius: 12px;
+      flex-shrink: 0;
+      padding: 1rem;
+
+      transform: scale(0.4);
+      opacity: 0;
+      transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+    }
+
+    .square.visible {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    .square p {
+      color: var(--fg);
+    }
+
+    .section4 {
+      height: calc(var(--vh, 1vh) * 200);
+    }
+    
+    @media (max-width: 768px) {
+      .squares {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+
+
+  </style>
+</head>
+
+<body>
+
+  <div id="progress-bar"></div>
+
+  <main>
+    <section class="panel section1">
+      <h1>Section 1</h1>
+      <p>Nouns trailing verbs leading adjectives coalescing into sentences of meaning and paragraphs of ideation.</p>
+    </section>
+
+    <section class="panel section2">
+      <h1>Section 2</h1>
+      <p>Nouns trailing verbs leading adjectives coalescing into sentences of meaning and paragraphs of ideation.</p>
+    </section>
+
+    <section class="panel section3">
+      <h1>Section 3</h1>
+      <p>Nouns trailing verbs leading adjectives coalescing into sentences of meaning and paragraphs of ideation.</p>
+      <div class="squares">
+        <div class="square"><p>Nouns trailing verbs leading adjectives coalescing into sentences of meaning and paragraphs of ideation.</p></div>
+        <div class="square"><p>Nouns trailing verbs leading adjectives coalescing into sentences of meaning and paragraphs of ideation.</p></div>
+      </div>
+    </section>
+
+    <section class="panel section4">
+      <h1>Section 4</h1>
+      <p>Nouns trailing verbs leading adjectives coalescing into sentences of meaning and paragraphs of ideation.</p>
+    </section>
+  </main>
+</body>
+
+  
+
+  <script>
+
+    const squares = document.querySelectorAll('.square');
+
+    const squareObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        } else {
+          entry.target.classList.remove('visible');
+        }
+      });
+    }, {
+      threshold: 0.5 // trigger when at least 50% is visible
+    });
+
+    squares.forEach(square => {
+      squareObserver.observe(square);
+    });
+
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        } else {
+          entry.target.classList.remove('visible');
+        }
+      });
+    }, {
+      threshold: 0.25
+    });
+
+    document.querySelectorAll('.panel').forEach(panel => {
+      observer.observe(panel);
+    });
+
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollPercent = (scrollTop / docHeight) * 100;
+      document.getElementById('progress-bar').style.width = `${scrollPercent}%`;
+    });
+
+
+
+    // === Robust viewport height (vh) fix ===
+    function setVh() {
+      const vh = (window.visualViewport?.height || window.innerHeight) * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    }
+
+    // Set once after full page load to avoid early firing
+    window.addEventListener('load', () => {
+      // Wait for layout to stabilize
+      requestAnimationFrame(() => {
+        requestAnimationFrame(setVh);
+      });
+    });
+
+    // Update on viewport resize
+    window.addEventListener('resize', setVh);
+    window.addEventListener('orientationchange', setVh);
+
+    // Chrome-specific: listen for UI collapse/expand
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', setVh);
+    }
+
+    // Fallback for Chrome: update on scroll (address bar collapses)
+    window.addEventListener('scroll', () => {
+      requestAnimationFrame(setVh);
+    });
+
+
+  </script>
+
+</body>
+</html>
