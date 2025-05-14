@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>05-Scroll-Based Step Reveal (Scroller Timeline)</title>
+  <style>
+:root {
+  --fg: rgb(33, 36, 37);
+  --bg: #f5f4f4;
+  --neon: rgb(0, 174, 255);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Reset & Base Styles */
+* {
+  font-family: monospace;
+  font-size: 22px;
+  color: var(--fg);
+  background-color: var(--bg);
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  display: flex;
+}
+
+/* Timeline Navigation */
+.timeline {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  padding: 2rem;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 20%;
+}
+
+.timeline ul {
+  list-style: none;
+  padding: 0;
+}
+
+.timeline li {
+  margin-bottom: 1.5rem;
+  padding: 0.5rem;
+  border-left: 4px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.timeline li:last-child {
+  margin-bottom: 0;
+}
+
+.timeline li.active {
+  font-weight: bold;
+  border-left: 4px solid var(--neon);
+  color: var(--neon);
+}
+
+/* Media Panel */
+.media {
+  width: 30%;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.media video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Steps Panel */
+.steps {
+  width: 50%;
+  padding: 2rem;
+}
+
+.step {
+  min-height: 100vh;
+  border-bottom: 1px solid #eee;
+  opacity: 0;
+  transform: translateY(50px);
+  transition: all 0.6s ease-out;
+}
+
+.step.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.step h2 {
+  margin: 0 0 1rem;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1.5rem;
+}
+
+.video-wrapper {
+  transition: opacity 0.6s ease;
+  opacity: 1;
+}
+
+.video-wrapper.fade-out {
+  opacity: 0;
+}
+
+</style>
+</head>
+
+<body>
+  
+  <div class="timeline">
+    <ul>
+      <li data-step="0">Step 1: Introduction</li>
+      <li data-step="1">Step 2: Research</li>
+      <li data-step="2">Step 3: Design</li>
+      <li data-step="3">Step 4: Development</li>
+      <li data-step="4">Step 5: Launch</li>
+    </ul>
+  </div>
+
+  <div class="media" id="media-display">
+    <div class="video-wrapper fade">
+      <video id="media-element" autoplay muted loop playsinline>
+        <source src="media1.mp4" type="video/mp4" />
+      </video>
+    </div>
+  </div>
+
+    <div class="steps">
+      <div class="step" data-media="media1.mp4" id="step-0">
+        <h2>Introduction</h2>
+        <p>Welcome to the journey!</p>
+      </div>
+      <div class="step" data-media="media2.mp4" id="step-1">
+        <h2>Research</h2>
+        <p>We began with user interviews.</p>
+      </div>
+      <div class="step" data-media="media3.mp4" id="step-2">
+        <h2>Design</h2>
+        <p>UI wireframes and UX flows were built.</p>
+      </div>
+      <div class="step" data-media="media4.mp4" id="step-3">
+        <h2>Development</h2>
+        <p>Frontend and backend came together.</p>
+      </div>
+      <div class="step" data-media="media5.mp4" id="step-4">
+        <h2>Launch</h2>
+        <p>We launched to the public!</p>
+      </div>
+    </div>
+
+</body>
+<script>
+
+// Select all elements with the class "step"
+const steps = document.querySelectorAll(".step");
+
+// Select all list items inside the element with class "timeline"
+const navItems = document.querySelectorAll(".timeline li");
+
+// Get the media element (e.g., a <video> or <audio> element)
+const mediaElement = document.getElementById("media-element");
+
+/**
+ * Activates the current step based on the index.
+ * Updates the timeline navigation and switches the media content if needed.
+ */
+function activateStep(index) {
+  // Remove the "active" class from all timeline items
+  navItems.forEach((item) => item.classList.remove("active"));
+
+  // Find the timeline item corresponding to the current step index
+  const target = document.querySelector(`.timeline li[data-step="${index}"]`);
+  if (target) target.classList.add("active"); // Add "active" class to current item
+
+  // Get the media source associated with the current step
+  const newMedia = steps[index].getAttribute("data-media");
+
+  // Select the <source> tag inside the media element (e.g., <video><source></source></video>)
+  const source = mediaElement.querySelector("source");
+
+  // Select the wrapper around the video for fade-in/out effect
+  const wrapper = document.querySelector(".video-wrapper");
+
+  // If the new media source is different from the current one
+  if (newMedia && source.getAttribute("src") !== newMedia) {
+    // Add "fade-out" class to trigger fade-out animation
+    wrapper.classList.add("fade-out");
+
+    // After the fade-out transition (600ms), update the video source
+    setTimeout(() => {
+      // Change the source of the video
+      source.setAttribute("src", newMedia);
+
+      // Reload the media element to apply the new source
+      mediaElement.load();
+
+      // Remove the fade-out class to trigger fade-in
+      wrapper.classList.remove("fade-out");
+    }, 600); // Duration matches the CSS transition
+  }
+}
+
+/**
+ * Handler function that runs on scroll.
+ * Determines which step is currently in view and activates it.
+ */
+function onScroll() {
+  let currentIndex = 0; // Default to the first step
+
+  // Loop through all steps to determine visibility and current active step
+  steps.forEach((step, index) => {
+    // Get the position of the step relative to the viewport
+    const rect = step.getBoundingClientRect();
+
+    // If the top of the step is within 80% of the viewport height, mark it as visible
+    if (rect.top <= window.innerHeight * 0.8) {
+      step.classList.add("visible"); // Trigger visual appearance animation
+    } else {
+      step.classList.remove("visible"); // Hide or reset animation
+    }
+
+    // If the step's top is above the halfway point of the screen, consider it the current step
+    if (rect.top <= window.innerHeight / 2) {
+      currentIndex = index;
+    }
+  });
+
+  // Activate the currently visible step
+  activateStep(currentIndex);
+}
+
+// Attach the scroll event listener to run the function on user scroll
+window.addEventListener("scroll", onScroll);
+
+// Run once when the page loads to set the initial state
+onScroll();
+
+  </script>
+
+</body>
+</html>
