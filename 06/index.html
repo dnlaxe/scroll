@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>06-Image Grid Reveal + Hover + Caption</title>
+  <style>
+    :root {
+      --fg: rgb(33, 36, 37);
+      --bg: #f5f4f4;
+      --neon: rgb(0, 174, 255);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    * {
+      font-family: monospace;
+      font-size: 22px;
+      color: var(--fg);
+      background-color: var(--bg);
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      padding: 0.75rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-auto-rows: 1fr;
+      width: 100%;
+      aspect-ratio: 5 / 5;
+      gap: 0.75rem;
+    }
+
+    .photo {
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      border-radius: 11px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: transform 0.6s ease, opacity 0.6s ease;
+    }
+
+    .photo.reveal {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+
+    .photo:hover img {
+      transform: scale(1.05);
+      z-index: 10;
+    }
+
+    .caption {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      padding: 0.75rem;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      pointer-events: none;
+    }
+
+    .photo:hover .caption {
+      opacity: 1;
+      transform: translateY(0);
+      z-index: 5;
+    }
+
+    /* Grid placement */
+    .p1  { grid-area: 1 / 1 / 3 / 3; }
+    .p2  { grid-area: 1 / 3 / 2 / 4; }
+    .p3  { grid-area: 1 / 4 / 2 / 5; }
+    .p4  { grid-area: 1 / 5 / 2 / 6; }
+    .p5  { grid-area: 2 / 3 / 3 / 4; }
+    .p6  { grid-area: 2 / 4 / 4 / 6; }
+    .p7  { grid-area: 3 / 1 / 4 / 2; }
+    .p8  { grid-area: 3 / 2 / 4 / 3; }
+    .p9  { grid-area: 3 / 3 / 4 / 4; }
+    .p10 { grid-area: 4 / 1 / 5 / 2; }
+    .p11 { grid-area: 4 / 2 / 6 / 5; }
+    .p12 { grid-area: 4 / 5 / 5 / 6; }
+    .p13 { grid-area: 5 / 1 / 6 / 2; }
+    .p14 { grid-area: 5 / 5 / 6 / 6; }
+
+    @media (max-width: 600px) {
+      .grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: none;
+        aspect-ratio: auto;
+      }
+
+      .photo {
+        aspect-ratio: 1 / 1;
+        grid-area: auto !important;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="grid">
+    <div class="photo reveal-img p1"><img src="photo1.avif" loading="lazy" alt="Photo 1"><div class="caption">Photo 1 Title</div></div>
+    <div class="photo reveal-img p2"><img src="photo2.avif" loading="lazy" alt="Photo 2"><div class="caption">Photo 2 Title</div></div>
+    <div class="photo reveal-img p3"><img src="photo3.avif" loading="lazy" alt="Photo 3"><div class="caption">Photo 3 Title</div></div>
+    <div class="photo reveal-img p4"><img src="photo4.avif" loading="lazy" alt="Photo 4"><div class="caption">Photo 4 Title</div></div>
+    <div class="photo reveal-img p5"><img src="photo5.avif" loading="lazy" alt="Photo 5"><div class="caption">Photo 5 Title</div></div>
+    <div class="photo reveal-img p6"><img src="photo6.avif" loading="lazy" alt="Photo 6"><div class="caption">Photo 6 Title</div></div>
+    <div class="photo reveal-img p7"><img src="photo7.avif" loading="lazy" alt="Photo 7"><div class="caption">Photo 7 Title</div></div>
+    <div class="photo reveal-img p8"><img src="photo8.avif" loading="lazy" alt="Photo 8"><div class="caption">Photo 8 Title</div></div>
+    <div class="photo reveal-img p9"><img src="photo9.avif" loading="lazy" alt="Photo 9"><div class="caption">Photo 9 Title</div></div>
+    <div class="photo reveal-img p10"><img src="photo10.avif" loading="lazy" alt="Photo 10"><div class="caption">Photo 10 Title</div></div>
+    <div class="photo reveal-img p11"><img src="photo11.avif" loading="lazy" alt="Photo 11"><div class="caption">Photo 11 Title</div></div>
+    <div class="photo reveal-img p12"><img src="photo12.avif" loading="lazy" alt="Photo 12"><div class="caption">Photo 12 Title</div></div>
+    <div class="photo reveal-img p13"><img src="photo13.avif" loading="lazy" alt="Photo 13"><div class="caption">Photo 13 Title</div></div>
+    <div class="photo reveal-img p14"><img src="photo14.avif" loading="lazy" alt="Photo 14"><div class="caption">Photo 14 Title</div></div>
+  </div>
+
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('reveal');
+        } else {
+          entry.target.classList.remove('reveal');
+        }
+      });
+    }, {
+      threshold: 0.2
+    });
+
+    document.querySelectorAll('.reveal-img').forEach(img => {
+      observer.observe(img);
+    });
+  </script>
+
+</body>
+</html>
